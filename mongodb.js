@@ -1,19 +1,56 @@
-// CRUD Operation read update delete
-const mongodb = require('mongodb')
-const mongoClient = mongodb.MongoClient
+
+const {MongoClient,ObjectID} = require('mongodb')
+
+const url = "mongodb://0.0.0.0:27017"
+const databaseName = 'myProject'
 
 
-
-// database connectipn ip
-const connectionURL = 'mongodb://127.0.0.1:27017';
-// database name
-const databaseName = "task-manager";
-
-
-mongoClient.connect(connectionURL, { useNewUrlParser: true }, (error,client) => {
+MongoClient.connect(url, { useNewUrlParser: true }, (error, client) => {
     if (error) {
-        return console.log('unable to connect to database!');
+       return console.log('unable to connect');
     }
-    console.log('Connected to database');
 
+    const db = client.db(databaseName)
+    console.log('connected');
+    // db.collection('users').insertOne(
+    //     {
+    //         name: 'hasan',
+    //         age:22
+    //     }
+    // )
+
+    // db.collection('users').insertMany([
+    //     {
+    //         name: "mohammed",
+    //         age:28
+    //     },
+    //     {
+    //         name: "mohammed",
+    //         age:28
+
+    //     }
+    // ], (error, res) => {
+    //     if (error) {
+    //      return console.log(error);
+    //     }
+    //     console.log(res.insertedCount);
+
+    // })
+
+
+    db.collection('tasks').insertMany([
+        {description:"description 1",
+            complated: false
+        },
+        {description:"description 1",
+        complated: false
+    }
+        
+    ], (error, res) => {
+        if (error) {
+           return console.log('something went wrong');
+        }
+
+        console.log(res.ops);
+    })
 })

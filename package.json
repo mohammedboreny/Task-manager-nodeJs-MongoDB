@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/mohammedboreny/Task-manager-nodeJs-MongoDB#readme",
   "dependencies": {
-    "mongodb": "^5.1.0"
+    "mongodb": "^3.1.10",
+    "mongoose": "^7.0.0"
   }
 }
