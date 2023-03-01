@@ -1,0 +1,23 @@
+{
+  "name": "task-manager",
+  "version": "1.0.0",
+  "description": "",
+  "main": "mongodb.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mohammedboreny/Task-manager-nodeJs-MongoDB.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mohammedboreny/Task-manager-nodeJs-MongoDB/issues"
+  },
+  "homepage": "https://github.com/mohammedboreny/Task-manager-nodeJs-MongoDB#readme",
+  "dependencies": {
+    "mongodb": "^5.1.0"
+  }
+}
