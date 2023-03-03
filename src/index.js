@@ -86,7 +86,57 @@ app.get('/tasks/:id', async (req, res) => {
     // })
 })
 
+const fillAbleUserInput = (input) => {
+     // This piece of code is to insure that the user enters only required fillable keys
+    const reqFilled = Object.keys(input)
+    const fillAble = ['name', 'email', 'password', 'age']
+    const isValid=reqFilled.every((x)=>fillAble.includes(x))
+    return isValid
+}
 
+
+app.patch('/users/:id', async (req, res) => {
+    // Check fillable function
+    const isValid = fillAbleUserInput(req.body)
+    if (!isValid) {
+      return  res.status(400).send({error:"invalid updates"})
+    }
+    try {
+        const user = await User.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true })
+        if (!user) {
+            return res.status(404).send()
+        }
+        res.send(user)
+    } catch (error) {
+        res.status(400).send({error})
+    }
+
+})
+
+const fillAbleTaskInput = (input) => {
+    const reqFilled = Object.keys(input)
+    const fillAble = ['description', 'completed']
+    const isValid=reqFilled.every((x)=>fillAble.includes(x))
+    return isValid
+}
+
+app.patch('/tasks/:id', async (req, res) => {
+    // Check fillable function
+    const isValid = fillAbleTaskInput(req.body)
+    if (!isValid) {
+      return  res.status(400).send({error:"invalid updates"})
+    }
+    try {
+        const task = await Task.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true })
+        if (!task) {
+            return res.status(404).send()
+        }
+        res.send(task)
+    } catch (error) {
+        res.status(400).send({error})
+    }
+
+})
 
 
 
