@@ -1,9 +1,7 @@
 const validator=require('validator')
 const mongoose = require('mongoose');
-
-
-
-const Tasks = mongoose.model('Tasks', {
+const bcrypt=require('bcrypt')
+const taskSchema=new mongoose.Schema( {
     description: {
         type: String,
         trim: true,
@@ -16,7 +14,17 @@ const Tasks = mongoose.model('Tasks', {
     }
     
 
-});
+})
+
+taskSchema.pre('save', async function (next) {
+    const task = this
+    console.log("this is middleware ");
+    
+    next()
+})
+
+const Tasks = mongoose.model('Tasks',taskSchema);
+
 
 
 module.exports=Tasks

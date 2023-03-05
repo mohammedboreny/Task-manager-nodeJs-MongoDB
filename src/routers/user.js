@@ -4,10 +4,13 @@ const User=require('../models/user')
 // router.get("/test", (req,res) => {
 //     res.send('This is a new router')
 // })
-
+const auth=require('../middleware/auth')
 
 // users Post end points
-router.post('/users', async (req, res) => {
+router.get('/users/me', auth, async (req, res) => {
+ res.send(req.user)
+})
+router.post('/users', auth, async (req, res) => {
     const user = new User(req.body)
 
     try {
@@ -16,8 +19,32 @@ router.post('/users', async (req, res) => {
     } catch (error) {
         res.status(400).send(error)
     }
-
+})
+    router.post('/users/signup', async (req, res) => {
+        const user = new User(req.body)
+       
+        try {
+            await user.save();
+            const token = await user.generateAuthToken()
+            res.send({user, token})
+        } catch (error) {
+            res.status(400).send(error)
+        }
+    })
     
+    
+
+
+    router.post('/users/login', async (req, res) => {
+        try {
+            //? findByCredentials is a user created function
+            const user = await User.findByCredentials(req.body.email, req.body.password)
+            const token=await user.generateAuthToken()
+            res.send({user,token})
+        } catch (error) {
+            res.status(400).send()
+        }
+    })
 
     // user.save().then((value) => {
     //     console.log(user);
@@ -25,11 +52,9 @@ router.post('/users', async (req, res) => {
     // }).catch((value) => {
     //     res.status(400).send(value)
     // })
-}
-)
 
 // users Get End Points
-router.get('/users', async (req, res) => {
+router.get('/users', auth ,async (req, res) => {
     
     try {
        const users= await User.find({})

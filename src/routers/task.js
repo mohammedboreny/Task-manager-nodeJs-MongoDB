@@ -47,20 +47,22 @@ router.get('/tasks/:id', async (req, res) => {
 
 
 const fillAbleTaskInput = (input) => {
-    const reqFilled = Object.keys(input)
-    const fillAble = ['description', 'completed']
-    const isValid = reqFilled.every((x) => fillAble.includes(x))
+   
     return isValid
 }
 
 router.patch('/tasks/:id', async (req, res) => {
+    const reqFilled = Object.keys(req.body)
+    const fillAble = ['description', 'completed']
+    const isValid = reqFilled.every((x) => fillAble.includes(x))
     // Check fillable function
-    const isValid = fillAbleTaskInput(req.body)
     if (!isValid) {
         return res.status(400).send({ error: "invalid updates" })
     }
     try {
-        const task = await Task.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true })
+        const task = await Task.findByIdAndUpdate(req.params.id, req.body)
+        reqFilled.forEach((value) => { reqFilled[value] = req.body[value] })
+        task.save()
         if (!task) {
             return res.status(404).send()
         }
