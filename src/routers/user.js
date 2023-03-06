@@ -8,7 +8,7 @@ const auth=require('../middleware/auth')
 
 // users Post end points
 router.get('/users/me', auth, async (req, res) => {
- res.send(req.user)
+    res.send(req.user)
 })
 router.post('/users', auth, async (req, res) => {
     const user = new User(req.body)
@@ -46,6 +46,34 @@ router.post('/users', auth, async (req, res) => {
         }
     })
 
+
+router.post('/users/logout', auth, async (req, res) => {
+        
+    try {
+        req.user.tokens = req.user.tokens.filter((token) => {
+            return token.token===req.token
+        })
+        await req.user.save()
+
+        res.send()
+
+    } catch (error) {
+        res.status(401).send()
+    }
+})
+    
+
+router.post('/users/logoutAll', auth, async (req, res) => {
+    try {
+        req.user.tokens = []
+        await req.user.save()
+        res.send()
+    }
+    catch (error) {
+        res.status(500).send()
+    }
+})
+
     // user.save().then((value) => {
     //     console.log(user);
     //     res.status(201).send('user updated successfully')
@@ -64,53 +92,38 @@ router.get('/users', auth ,async (req, res) => {
     }
 })
 
-router.get('/users/:id', async (req, res) => {
-    
-    try {
-        const user = await User.findById(req.params.id)
-        res.status(201).send(user)
-    } catch (error) {
-        res.status(500).send(error)
-    }
-})
 
 
-const fillAbleUserInput = (input) => {
-    // This piece of code is to insure that the user enters only required fillable keys
-   const reqFilled = Object.keys(input)
+
+router.patch('/users/me',auth, async (req, res) => {
+   // Check fillable function
+   const reqFilled = Object.keys(req.body)
    const fillAble = ['name', 'email', 'password', 'age']
    const isValid=reqFilled.every((x)=>fillAble.includes(x))
-   return isValid
-}
-
-
-router.patch('/users/:id', async (req, res) => {
-   // Check fillable function
-   const isValid = fillAbleUserInput(req.body)
    if (!isValid) {
      return  res.status(400).send({error:"invalid updates"})
    }
-   try {
-       const user = await User.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true })
-       if (!user) {
-           return res.status(404).send()
-       }
-       res.send(user)
+    try {
+       reqFilled.forEach((update) => {req.user[update]=req.body[update]})
+        await req.user.save()
+       res.send(req.user)
    } catch (error) {
        res.status(400).send({error})
    }
 
 })
 
-router.delete('/users/:id', async (req,res) => {
+router.delete('/users/me', auth , async (req,res) => {
     
     try {
-        const user = await User.findByIdAndDelete(req.params.id)
-        
-        if (!user) {
-            return res.status(404).send()
-        }
-        res.send("user has been deleted")
+        const user=await User.findByIdAndDelete(req.user._id)
+        // remove() is a built in mongoose function
+        if (!user)
+        {
+            throw new Error('user is undefined')
+            }
+        // await req.user.remove()
+        res.send(user)
     } catch (error) {
         res.status(400).send()
     }

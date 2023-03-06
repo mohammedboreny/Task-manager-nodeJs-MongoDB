@@ -48,6 +48,7 @@ const userSchema= new mongoose.Schema( {
     }]
 })
 
+
 userSchema.methods.generateAuthToken = async function () {
     const user = this
     const token = JWT.sign({ _id: user._id.toString() }, 'thisismynewtoken')
@@ -56,6 +57,13 @@ userSchema.methods.generateAuthToken = async function () {
     user.tokens = user.tokens.concat({ token })
     await user.save()
     return token
+}
+userSchema.methods.toJSON = function () {
+    const user = this
+    const userObject = user.toObject()
+    delete userObject.password
+    delete userObject.tokens
+    return userObject
 }
 // schemaName.statics.YourDefinedFunction for user defining function 
 userSchema.statics.findByCredentials = async (email, password) => {
