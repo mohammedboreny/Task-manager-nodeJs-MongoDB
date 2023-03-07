@@ -12,16 +12,21 @@ const taskSchema=new mongoose.Schema( {
         required: false,
         default:false
     }
-    
+    ,
+    owner: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: true,
+        ref:'User'
+    }
 
 })
 
-taskSchema.pre('save', async function (next) {
-    const task = this
-    console.log("this is middleware ");
+// taskSchema.pre('save', async function (next) {
+//     const task = this
+//     console.log("this is middleware ");
     
-    next()
-})
+//     next()
+// })
 
 const Tasks = mongoose.model('Tasks',taskSchema);
 

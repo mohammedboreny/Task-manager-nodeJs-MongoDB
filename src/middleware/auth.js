@@ -5,18 +5,13 @@ const auth = async (req, res, next) => {
     try {
         // !to check the header variables of the request 
         const token = req.header('Authorization').replace('Bearer ','')
-       console.log(token);
         // ! To check if the header token value match the encryption value
         const decoded = JWT.verify(token, 'thisismynewtoken')
-        console.log(decoded);
         // ! to find the users based on their tokens object id and tokens token value 
         const user = await User.findOne({ _id: decoded._id, 'tokens.token': token })
-
     if (!user) {
         throw new Error()
         }
-
-
         // ! To provide user variable and token variables to the route function, So there is no need to fetch it again.
         req.user = user
       

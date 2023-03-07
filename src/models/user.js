@@ -1,7 +1,8 @@
 const validator=require('validator')
 const mongoose = require('mongoose');
 const JWT=require('jsonwebtoken')
-const bcrypt=require('bcrypt')
+const bcrypt = require('bcrypt')
+const Task=require('./task.js')
 const userSchema= new mongoose.Schema( {
     name: {
         type: String,
@@ -40,14 +41,26 @@ const userSchema= new mongoose.Schema( {
             }
         }
     },
-    tokens: [{
+   tokens: [{
         token: {
             type: String,
             required:true
         }
-    }]
-})
+    }],
+},
+{
+    toJSON: { virtuals: true }, // So `res.json()` and other `JSON.stringify()` functions include virtuals
+    toObject: { virtuals: true } // So `console.log()` and other functions that use `toObject()` include virtuals
+  }
+)
 
+//  a relationship between to entity
+userSchema.virtual('tasks', {
+    ref: 'Tasks',
+    // local field i like a primary field, foreignField is like a foreign key
+    localField: '_id',
+    foreignField:'owner'
+})
 
 userSchema.methods.generateAuthToken = async function () {
     const user = this
@@ -86,6 +99,12 @@ userSchema.pre('save', async function (next) {
         user.password = await bcrypt.hash(user.password,8)
     }
     
+    next()
+})
+// Delete user task when user is removed
+userSchema.pre('deleteOne', async function (next) {
+    const user = this
+    await Task.deleteMany({owner:user._id})
     next()
 })
 const User = mongoose.model('User', userSchema)

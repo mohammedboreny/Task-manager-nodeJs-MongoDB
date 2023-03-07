@@ -95,7 +95,7 @@ router.get('/users', auth ,async (req, res) => {
 
 
 
-router.patch('/users/me',auth, async (req, res) => {
+router.patch('/users/me', auth  , async (req, res) => {
    // Check fillable function
    const reqFilled = Object.keys(req.body)
    const fillAble = ['name', 'email', 'password', 'age']
@@ -113,17 +113,12 @@ router.patch('/users/me',auth, async (req, res) => {
 
 })
 
-router.delete('/users/me', auth , async (req,res) => {
+router.delete('/users/me', auth , async (req , res) => {
     
     try {
-        const user=await User.findByIdAndDelete(req.user._id)
-        // remove() is a built in mongoose function
-        if (!user)
-        {
-            throw new Error('user is undefined')
-            }
-        // await req.user.remove()
-        res.send(user)
+       
+        await User.deleteOne({ _id: req.user._id });
+        res.send(req.user)
     } catch (error) {
         res.status(400).send()
     }
